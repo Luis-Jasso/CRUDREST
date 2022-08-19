@@ -53,7 +53,7 @@ public class ProductoRestController {
 		
 		// also just in case they pass an id in JSON ... set id to 0
 		// this is to force a save of new item ... instead of update
-		
+		System.out.println(theProducto);
 		theProducto.setId(0);
 		
 		productoService.save(theProducto);

@@ -57,17 +57,17 @@ public class ProductoDAOJdbcImpl implements ProductoDAO {
 		Producto producto = null;
 
 		String sql = "SELECT * FROM productos WHERE id=?";
-		try (Connection conn = dataSource.getConnection();
-				PreparedStatement stmt = conn.prepareStatement(sql);
-				ResultSet rest = stmt.executeQuery();) {
+		try (Connection conn = dataSource.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql);) {
 
 			stmt.setInt(1, theId);
+			try (ResultSet rest = stmt.executeQuery();) {
 
-			if (rest.next()) {
-				String nombre = rest.getString("nombre");
-				String descipr = rest.getString("descripcion");
-				int stock = rest.getInt("stock");
-				producto = new Producto(theId, nombre, descipr, stock);
+				if (rest.next()) {
+					String nombre = rest.getString("nombre");
+					String descipr = rest.getString("descripcion");
+					int stock = rest.getInt("stock");
+					producto = new Producto(theId, nombre, descipr, stock);
+				}
 			}
 
 		} catch (SQLException e) {
@@ -80,20 +80,40 @@ public class ProductoDAOJdbcImpl implements ProductoDAO {
 	@Override
 	public void save(Producto theProdcuto) {
 
-		String sql = "UPDATE productos SET nombre=?, descripcion=?, stock=? WHERE id=?";
+		if (theProdcuto.getId() != 0) {
+			String sql = "update productos set nombre=?, descripcion=?, stock=? where id=?";
+			try (Connection con = dataSource.getConnection(); PreparedStatement pstmt = con.prepareStatement(sql);) {
 
-		try (Connection con = dataSource.getConnection(); PreparedStatement pstmt = con.prepareStatement(sql);) {
+		
+				pstmt.setString(1, theProdcuto.getNameProduct());
+				pstmt.setString(2, theProdcuto.getDescripcion());
+				pstmt.setInt(3, theProdcuto.getStock());
+				pstmt.setInt(4, theProdcuto.getId());
 
-			pstmt.setString(1, theProdcuto.getNombrePorducto());
-			pstmt.setString(2, theProdcuto.getDescripcion());
-			pstmt.setInt(3, theProdcuto.getStock());
-			pstmt.setInt(4, theProdcuto.getId());
+				pstmt.execute();
 
-			pstmt.execute();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else {
 
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("INSERTAR un producto nuevo");
+			String sql = "INSERT INTO productos VALUES(?,?, ?, ?)";
+			try (Connection con = dataSource.getConnection(); PreparedStatement pstmt = con.prepareStatement(sql);) {
+
+				pstmt.setInt(1, theProdcuto.getId());
+				pstmt.setString(2, theProdcuto.getDescripcion());
+				pstmt.setString(3, theProdcuto.getDescripcion());
+				pstmt.setInt(4, theProdcuto.getStock());
+
+				pstmt.execute();
+				System.out.println("Producto insertado: " + theProdcuto);
+
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 
 	}
@@ -101,12 +121,11 @@ public class ProductoDAOJdbcImpl implements ProductoDAO {
 	@Override
 	public void deleteById(int theId) {
 		String sql = "DELETE FROM productos WHERE id=?";
-		try(Connection conn = dataSource.getConnection();
-				PreparedStatement pstmt = conn.prepareStatement(sql);){
-			
+		try (Connection conn = dataSource.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql);) {
+
 			pstmt.setInt(1, theId);
 			pstmt.execute();
-			
+
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

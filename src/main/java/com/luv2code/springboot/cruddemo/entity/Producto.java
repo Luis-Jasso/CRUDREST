@@ -8,7 +8,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "student")
+@Table(name = "productos")
 public class Producto {
 
 	// define fields
@@ -54,12 +54,14 @@ public class Producto {
 		this.id = id;
 	}
 
-	public String getNombrePorducto() {
+	
+
+	public String getNameProduct() {
 		return nameProduct;
 	}
 
-	public void setNombreProducto(String firstName) {
-		this.nameProduct = firstName;
+	public void setNameProduct(String nameProduct) {
+		this.nameProduct = nameProduct;
 	}
 
 	public String getDescripcion() {

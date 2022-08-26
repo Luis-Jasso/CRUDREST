@@ -28,7 +28,7 @@ public class ProductoRestController {
 	
 	// expose "/productoss" and return list of productos
 	@GetMapping("/productoss")
-	public List<Producto> findAll() {
+	public List<Producto> findAll(){       
 		return productoService.findAll();
 	}
 
